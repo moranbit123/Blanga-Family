@@ -155,6 +155,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .loading-text{font-size:13px;color:var(--muted)}
 
 .parent-note{font-size:11px;color:var(--muted);font-style:italic;padding:4px 2px 8px}
+.tab.act-mo{color:#639922;border-bottom-color:#639922}
+.money-input{width:100%;padding:9px 11px;border:1px solid var(--border);border-radius:10px;background:var(--bg);font-size:15px;color:var(--text);font-family:inherit;outline:none;text-align:center}
+.money-input:focus{border-color:var(--gr)}
+.balance-pos{color:#3B6D11;font-weight:700}
+.balance-neg{color:var(--co);font-weight:700}
+.tx-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px}
+.tx-row:last-child{border-bottom:none}
+.tx-amount-pos{color:var(--gr);font-weight:600;margin-left:auto}
+.tx-amount-neg{color:var(--co);font-weight:600;margin-left:auto}
 .tab.act-d{color:#BA7517;border-bottom-color:#BA7517}
 .bar-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
 .bar-label{font-size:11px;color:var(--muted);width:28px;flex-shrink:0;text-align:right}
@@ -178,6 +187,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <button class="tab act-m" onclick="showTab('mila',this,'m')">🌸 Mila</button>
     <button class="tab" onclick="showTab('romy',this,'r')">🌿 Romy</button>
     <button class="tab" onclick="showTab('parent',this,'p')">👨‍👩‍👧 Mom & Dad</button>
+    <button class="tab" onclick="showTab('money',this,'mo')">💰 Money</button>
     <button class="tab" onclick="showTab('vote',this,'v')">🗳️ Vote</button>
   </div>
 </div>
@@ -253,13 +263,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div class="sec-label">Parent Tasks — This Week</div>
   <div class="task" onclick="toggleParent('walk_mila',this)">
     <div class="task-icon">🎧</div>
-    <div class="tinfo"><div class="tname">Walk with Mila</div><div class="tmeta">outside with music · 2x per week</div></div>
+    <div class="tinfo"><div class="tname">Walk with Mila</div><div class="tmeta">outside with music · once a week</div></div>
     <span class="bdg bdg-p">Parent</span>
     <div class="chk cp" id="chk-walk_mila"></div>
   </div>
   <div class="task" onclick="toggleParent('walk_romy',this)">
     <div class="task-icon">🎧</div>
-    <div class="tinfo"><div class="tname">Walk with Romy</div><div class="tmeta">outside with music · 2x per week</div></div>
+    <div class="tinfo"><div class="tname">Walk with Romy</div><div class="tmeta">outside with music · once a week</div></div>
     <span class="bdg bdg-p">Parent</span>
     <div class="chk cp" id="chk-walk_romy"></div>
   </div>
@@ -371,59 +381,137 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
   </div>
 </div>
+
+<!-- MONEY -->
+<div id="sc-money" class="screen">
+  <div style="font-size:17px;font-weight:700;margin-bottom:4px">💰 Money Tracker</div>
+  <div style="font-size:12px;color:var(--muted);margin-bottom:14px">Resets on the 1st of each month</div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+
+    <!-- MILA CARD -->
+    <div style="background:var(--pul);border-radius:16px;padding:14px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+        <img id="money-mila-img" style="width:36px;height:36px;border-radius:50%;object-fit:cover" src="">
+        <div style="font-size:14px;font-weight:700;color:var(--pud)">Mila</div>
+      </div>
+      <div style="font-size:11px;color:var(--pud);margin-bottom:2px">Earned this month</div>
+      <div style="font-size:20px;font-weight:700;color:var(--pu);margin-bottom:8px" id="money-mila-earned">₪0</div>
+      <div style="font-size:11px;color:var(--pud);margin-bottom:2px">Given so far</div>
+      <div style="font-size:20px;font-weight:700;color:var(--co);margin-bottom:8px" id="money-mila-given">₪0</div>
+      <div style="border-top:1px solid rgba(127,119,221,.3);padding-top:8px;margin-top:4px">
+        <div style="font-size:11px;color:var(--pud);margin-bottom:4px">Balance</div>
+        <div style="font-size:26px;font-weight:800" id="money-mila-balance">₪0</div>
+      </div>
+    </div>
+
+    <!-- ROMY CARD -->
+    <div style="background:var(--tel);border-radius:16px;padding:14px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+        <img id="money-romy-img" style="width:36px;height:36px;border-radius:50%;object-fit:cover" src="">
+        <div style="font-size:14px;font-weight:700;color:var(--ted)">Romy</div>
+      </div>
+      <div style="font-size:11px;color:var(--ted);margin-bottom:2px">Earned this month</div>
+      <div style="font-size:20px;font-weight:700;color:var(--te);margin-bottom:8px" id="money-romy-earned">₪0</div>
+      <div style="font-size:11px;color:var(--ted);margin-bottom:2px">Given so far</div>
+      <div style="font-size:20px;font-weight:700;color:var(--co);margin-bottom:8px" id="money-romy-given">₪0</div>
+      <div style="border-top:1px solid rgba(29,158,117,.3);padding-top:8px;margin-top:4px">
+        <div style="font-size:11px;color:var(--ted);margin-bottom:4px">Balance</div>
+        <div style="font-size:26px;font-weight:800" id="money-romy-balance">₪0</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD PAYMENT -->
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px;margin-bottom:12px">
+    <div style="font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px">Add payment given 💸</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+      <div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:4px">For</div>
+        <select id="pay-girl" style="width:100%;padding:9px;border:1px solid var(--border);border-radius:10px;background:var(--bg);font-size:14px;color:var(--text);outline:none">
+          <option value="mila">🌸 Mila</option>
+          <option value="romy">🌿 Romy</option>
+        </select>
+      </div>
+      <div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:4px">Amount (₪)</div>
+        <input type="number" id="pay-amount" class="money-input" placeholder="0" min="0">
+      </div>
+    </div>
+    <div style="margin-bottom:10px">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:4px">Note (optional)</div>
+      <input type="text" id="pay-note" style="width:100%;padding:9px 11px;border:1px solid var(--border);border-radius:10px;background:var(--bg);font-size:13px;color:var(--text);outline:none" placeholder="e.g. mall, snack, allowance advance...">
+    </div>
+    <button class="btn btn-primary" onclick="addPayment()">Add payment ₪</button>
+  </div>
+
+  <!-- TRANSACTION HISTORY -->
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px">
+    <div style="font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">This month's transactions</div>
+    <div id="tx-list"><div style="font-size:13px;color:var(--muted);text-align:center;padding:16px">No transactions yet</div></div>
+  </div>
+</div>
+
 <!-- VOTE -->
 <div id="sc-vote" class="screen">
   <div style="font-size:17px;font-weight:700;margin-bottom:4px">🗳️ Family Votes</div>
   <div style="font-size:12px;color:var(--muted);margin-bottom:14px">Thursday poll · everyone votes · majority wins</div>
 
   <div class="vote-card">
-    <h3>🍕 Friday Dinner</h3>
-    <div class="vote-sub">Delivery or home-cooked? Write your wish:</div>
+    <h3>🍽️ Friday Dinner — What do you feel like?</h3>
+    <div class="vote-sub">Everyone writes their wish — open vote!</div>
     <div id="dinner-voters">
       <div class="voter-card">
-        <div class="voter-header"><div class="avatar av-m" style="width:28px;height:28px;font-size:14px">🌸</div><div class="voter-name" style="color:var(--pu)">Mila</div></div>
-        <div class="vote-type-row">
-          <button class="vote-type-btn" onclick="setDT('mila','delivery',this)">🛵 Delivery</button>
-          <button class="vote-type-btn" onclick="setDT('mila','homemade',this)">🏠 Home-cooked</button>
-        </div>
-        <textarea class="vote-input" id="di-mila" rows="2" placeholder="e.g. sushi, pizza, pasta..."></textarea>
-        <button class="btn" style="font-size:13px;padding:9px" onclick="submitDinner('mila')">Submit vote ✓</button>
-        <div class="vote-submitted" id="dd-mila">✓ Vote saved!</div>
+        <div class="voter-header"><div class="avatar av-m" style="width:26px;height:26px;font-size:12px">🌸</div><div class="voter-name" style="color:var(--pu)">Mila</div></div>
+        <textarea class="vote-input" id="di-mila" rows="2" placeholder="What do you feel like eating? (e.g. pasta, schnitzel...)"></textarea>
+        <button class="btn" style="font-size:13px;padding:9px" onclick="submitDinner('mila')">Submit ✓</button>
+        <div class="vote-submitted" id="dd-mila">✓ Saved!</div>
       </div>
       <div class="voter-card">
-        <div class="voter-header"><div class="avatar av-r" style="width:28px;height:28px;font-size:14px">🌿</div><div class="voter-name" style="color:var(--te)">Romy</div></div>
-        <div class="vote-type-row">
-          <button class="vote-type-btn" onclick="setDT('romy','delivery',this)">🛵 Delivery</button>
-          <button class="vote-type-btn" onclick="setDT('romy','homemade',this)">🏠 Home-cooked</button>
-        </div>
-        <textarea class="vote-input" id="di-romy" rows="2" placeholder="e.g. sushi, pizza, pasta..."></textarea>
-        <button class="btn" style="font-size:13px;padding:9px" onclick="submitDinner('romy')">Submit vote ✓</button>
-        <div class="vote-submitted" id="dd-romy">✓ Vote saved!</div>
+        <div class="voter-header"><div class="avatar av-r" style="width:26px;height:26px;font-size:12px">🌿</div><div class="voter-name" style="color:var(--te)">Romy</div></div>
+        <textarea class="vote-input" id="di-romy" rows="2" placeholder="What do you feel like eating?"></textarea>
+        <button class="btn" style="font-size:13px;padding:9px" onclick="submitDinner('romy')">Submit ✓</button>
+        <div class="vote-submitted" id="dd-romy">✓ Saved!</div>
       </div>
       <div class="voter-card">
-        <div class="voter-header"><div class="avatar av-p" style="width:28px;height:28px;font-size:14px">👩</div><div class="voter-name" style="color:var(--pi)">Mom</div></div>
-        <div class="vote-type-row">
-          <button class="vote-type-btn" onclick="setDT('mom','delivery',this)">🛵 Delivery</button>
-          <button class="vote-type-btn" onclick="setDT('mom','homemade',this)">🏠 Home-cooked</button>
-        </div>
-        <textarea class="vote-input" id="di-mom" rows="2" placeholder="What do you feel like?"></textarea>
-        <button class="btn" style="font-size:13px;padding:9px" onclick="submitDinner('mom')">Submit vote ✓</button>
-        <div class="vote-submitted" id="dd-mom">✓ Vote saved!</div>
+        <div class="voter-header"><div class="avatar av-p" style="width:26px;height:26px;font-size:12px">👩</div><div class="voter-name" style="color:var(--pi)">Mom</div></div>
+        <textarea class="vote-input" id="di-mom" rows="2" placeholder="What do you feel like eating?"></textarea>
+        <button class="btn" style="font-size:13px;padding:9px" onclick="submitDinner('mom')">Submit ✓</button>
+        <div class="vote-submitted" id="dd-mom">✓ Saved!</div>
       </div>
       <div class="voter-card">
-        <div class="voter-header"><div class="avatar av-b" style="width:28px;height:28px;font-size:14px">👨</div><div class="voter-name" style="color:var(--bl)">Dad</div></div>
-        <div class="vote-type-row">
-          <button class="vote-type-btn" onclick="setDT('dad','delivery',this)">🛵 Delivery</button>
-          <button class="vote-type-btn" onclick="setDT('dad','homemade',this)">🏠 Home-cooked</button>
-        </div>
-        <textarea class="vote-input" id="di-dad" rows="2" placeholder="What do you feel like?"></textarea>
-        <button class="btn" style="font-size:13px;padding:9px" onclick="submitDinner('dad')">Submit vote ✓</button>
-        <div class="vote-submitted" id="dd-dad">✓ Vote saved!</div>
+        <div class="voter-header"><div class="avatar av-b" style="width:26px;height:26px;font-size:12px">👨</div><div class="voter-name" style="color:var(--bl)">Dad</div></div>
+        <textarea class="vote-input" id="di-dad" rows="2" placeholder="What do you feel like eating?"></textarea>
+        <button class="btn" style="font-size:13px;padding:9px" onclick="submitDinner('dad')">Submit ✓</button>
+        <div class="vote-submitted" id="dd-dad">✓ Saved!</div>
       </div>
     </div>
     <div class="result-card" id="dinner-results" style="display:none">
-      <h4>Results 🗳️</h4>
+      <h4>Everyone wants... 🍽️</h4>
       <div id="dinner-result-content"></div>
+    </div>
+  </div>
+
+  <div class="vote-card">
+    <h3>🛵 Monthly Wolt Night!</h3>
+    <div class="vote-sub">Once a month — girls pick the restaurant!</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+      <div class="voter-card">
+        <div class="voter-header"><div class="avatar av-m" style="width:24px;height:24px;font-size:11px">🌸</div><div class="voter-name" style="color:var(--pu);font-size:12px">Mila</div></div>
+        <textarea class="vote-input" id="wolt-mila" rows="2" placeholder="Which restaurant?"></textarea>
+        <button class="btn" style="font-size:12px;padding:7px;margin-top:6px" onclick="submitWolt('mila')">Vote ✓</button>
+        <div class="vote-submitted" id="wd-mila">✓ Saved!</div>
+      </div>
+      <div class="voter-card">
+        <div class="voter-header"><div class="avatar av-r" style="width:24px;height:24px;font-size:11px">🌿</div><div class="voter-name" style="color:var(--te);font-size:12px">Romy</div></div>
+        <textarea class="vote-input" id="wolt-romy" rows="2" placeholder="Which restaurant?"></textarea>
+        <button class="btn" style="font-size:12px;padding:7px;margin-top:6px" onclick="submitWolt('romy')">Vote ✓</button>
+        <div class="vote-submitted" id="wd-romy">✓ Saved!</div>
+      </div>
+    </div>
+    <div class="result-card" id="wolt-results" style="display:none">
+      <h4>🛵 Wolt picks this month</h4>
+      <div id="wolt-result-content"></div>
     </div>
   </div>
 
@@ -503,9 +591,10 @@ const HOUSE=[
 ];
 const HABITS=[
   {id:'breakfast',icon:'🥣',name:'Eat breakfast',m:'before school',r:'before school'},
-  {id:'water',icon:'💧',name:'Drink water',m:'stay hydrated!',r:'stay hydrated!'},
+  {id:'homework',icon:'📚',name:'Do homework',m:'after school',r:'after school'},
   {id:'laundry',icon:'🧺',name:'Dirty clothes in basket',m:'every day',r:'every day'},
   {id:'dishes',icon:'🥄',name:'Clear own dishes',m:'after every meal',r:'after every meal'},
+  {id:'tidy_before',icon:'🏠',name:'Tidy house before parents home',m:'every day',r:'every day'},
 ];
 
 // ---- STATE ----
@@ -530,6 +619,7 @@ async function loadToday(){
       if(d.parent) state.parent = d.parent;
       if(d.votes) state.votes = d.votes;
       if(d.coffee) state.coffee = d.coffee;
+      if(d.money) state.money = d.money;
     }
   }catch(e){}
 
@@ -571,7 +661,8 @@ async function saveShared(){
     await setDoc(doc(db,'shared','data'),{
       parent: state.parent||{},
       votes: state.votes||{},
-      coffee: state.coffee||{}
+      coffee: state.coffee||{},
+      money: state.money||{}
     },{merge:true});
     setSynced();
   }catch(e){ document.getElementById('sync-dot').className='sync-dot'; }
@@ -584,6 +675,7 @@ onSnapshot(doc(db,'shared','data'), (snap)=>{
     if(d.parent) state.parent=d.parent;
     if(d.votes) state.votes=d.votes;
     if(d.coffee) state.coffee=d.coffee;
+    if(d.money) state.money=d.money;
     updateParentUI();
     updateCoffeeDisplay();
     renderDinnerResults();
@@ -699,13 +791,20 @@ function getMonthAvg(girl){
 }
 
 function hasHouseBonus(girl){
+  // Need at least 1 house task per week = 4 weeks per month for full 50 bonus
   const y=today.getFullYear(),m=today.getMonth();
+  const weeksWithBonus=new Set();
   for(let d=1;d<=today.getDate();d++){
-    const k=new Date(y,m,d).toISOString().slice(0,10);
+    const dt=new Date(y,m,d);
+    const k=dt.toISOString().slice(0,10);
     const gs=(k===todayKey?state[girl]:monthData[k]&&monthData[k][girl])||{};
-    if(HOUSE.some(h=>gs[h.id]))return true;
+    if(HOUSE.some(h=>gs[h.id])){
+      // week number within month (0-4)
+      const weekNum=Math.floor((d-1)/7);
+      weeksWithBonus.add(weekNum);
+    }
   }
-  return false;
+  return weeksWithBonus.size; // returns number of weeks completed
 }
 
 function renderGirl(girl){
@@ -721,7 +820,7 @@ function renderGirl(girl){
   const ma=getMonthAvg(girl);
   document.getElementById(girl+'-month-prog').style.width=ma+'%';
   document.getElementById(girl+'-mpct').textContent=ma+'% monthly avg';
-  const bonus=hasHouseBonus(girl)?50:0;
+  const weeksBonus=hasHouseBonus(girl); const bonus=Math.min(weeksBonus,4)*12.5;
   const base=ma>=90?150:Math.round(150*(ma/100));
   document.getElementById(girl+'-earned').textContent='₪'+(base+bonus);
 }
@@ -758,14 +857,14 @@ function updateParentUI(){
     const tp=getDayPct(girl,todayKey)||0;
     document.getElementById('p-'+girl+'-today').textContent=tp+'%';
     const ma=getMonthAvg(girl);
-    const bonus=hasHouseBonus(girl)?50:0;
+    const weeksBonus=hasHouseBonus(girl); const bonus=Math.min(weeksBonus,4)*12.5;
     const base=ma>=90?150:Math.round(150*(ma/100));
     const total=base+bonus;
     document.getElementById('p-'+girl+'-summary').textContent=`Monthly avg: ${ma}% — ${ma>=90?'On track!':'Needs 90%'}`;
     const pill=document.getElementById('p-'+girl+'-pill');
     pill.textContent='₪'+total; pill.className='money-pill'+(ma>=90?'':' partial');
-    document.getElementById('p-'+girl+'-bonus-txt').textContent=bonus?'+₪50 bonus ✓':'no house bonus yet';
-    document.getElementById('p-'+girl+'-bonus-line').textContent='Bonus: '+(bonus?'+₪50':'—');
+    document.getElementById('p-'+girl+'-bonus-txt').textContent=weeksBonus>0?'+₪'+Math.round(bonus)+' bonus ('+weeksBonus+'/4 weeks)':'no house bonus yet';
+    document.getElementById('p-'+girl+'-bonus-line').textContent='Bonus: '+(bonus?'+₪'+Math.round(bonus)+' ('+weeksBonus+'/4 weeks)':'—');
     document.getElementById('p-'+girl+'-total').textContent='₪'+total;
     const dc=document.getElementById('p-'+girl+'-dots'); dc.innerHTML='';
     const y=today.getFullYear(),m=today.getMonth();
@@ -790,44 +889,69 @@ function getWeekKey(){const d=new Date(today);d.setDate(d.getDate()-d.getDay());
 window.submitDinner=function(person){
   const input=document.getElementById('di-'+person);
   const txt=input.value.trim();
-  if(!dinnerTypes[person]){alert('Please pick delivery or home-cooked first!');return;}
+  if(!txt){alert('Please write what you feel like eating!');return;}
   const wk='dinner-'+getWeekKey();
   if(!state.votes)state.votes={};
   if(!state.votes[wk])state.votes[wk]={};
-  state.votes[wk][person]={type:dinnerTypes[person],wish:txt||'no preference'};
+  state.votes[wk][person]={wish:txt};
   input.disabled=true;
   const dd=document.getElementById('dd-'+person);
   dd.style.display='block';
   renderDinnerResults();
   saveShared();
 };
+
+window.submitWolt=function(person){
+  const input=document.getElementById('wolt-'+person);
+  const txt=input.value.trim();
+  if(!txt){alert('Please write a restaurant name!');return;}
+  const mk='wolt-'+monthKey;
+  if(!state.votes)state.votes={};
+  if(!state.votes[mk])state.votes[mk]={};
+  state.votes[mk][person]=txt;
+  input.disabled=true;
+  const wd=document.getElementById('wd-'+person);
+  if(wd)wd.style.display='block';
+  renderWoltResults();
+  saveShared();
+};
+
+function renderWoltResults(){
+  const mk='wolt-'+monthKey;
+  const votes=(state.votes&&state.votes[mk])||{};
+  const keys=Object.keys(votes);
+  const wr=document.getElementById('wolt-results');
+  const wrc=document.getElementById('wolt-result-content');
+  if(!wr||!wrc)return;
+  if(!keys.length){wr.style.display='none';return;}
+  wr.style.display='block';
+  const names={mila:'🌸 Mila',romy:'🌿 Romy'};
+  let h='';
+  keys.forEach(k=>{h+='<div class="result-item"><span>'+( names[k]||k)+'</span><span style="font-weight:600;color:var(--am)">'+votes[k]+'</span></div>';});
+  wrc.innerHTML=h;
+  keys.forEach(k=>{
+    const inp=document.getElementById('wolt-'+k);
+    const wd=document.getElementById('wd-'+k);
+    if(inp){inp.value=votes[k];inp.disabled=true;}
+    if(wd)wd.style.display='block';
+  });
+}
+
 function renderDinnerResults(){
   const wk='dinner-'+getWeekKey();
   const votes=(state.votes&&state.votes[wk])||{};
   const keys=Object.keys(votes);
   if(!keys.length){document.getElementById('dinner-results').style.display='none';return;}
   document.getElementById('dinner-results').style.display='block';
-  const del=keys.filter(k=>votes[k].type==='delivery').length;
-  const hm=keys.filter(k=>votes[k].type==='homemade').length;
-  const winner=del>hm?'🛵 Delivery':hm>del?'🏠 Home-cooked':"🤝 It's a tie!";
-  const names={mila:'🌸 Mila',romy:'🌿 Romy',mom:'👩 Mom',dad:'👨 Dad'};
-  let html=`<div class="result-item"><span>🛵 Delivery</span><span>${del} vote${del!==1?'s':''}${del>hm?'<span class="winner-tag">Winner!</span>':''}</span></div>`;
-  html+=`<div class="result-item"><span>🏠 Home-cooked</span><span>${hm} vote${hm!==1?'s':''}${hm>del?'<span class="winner-tag">Winner!</span>':''}</span></div>`;
-  html+=`<div style="margin-top:8px;font-size:13px;font-weight:600;color:var(--bld)">Decision: ${winner}</div>`;
-  html+=`<div style="margin-top:8px;font-size:11px;color:var(--muted)">Everyone's wishes:</div>`;
-  keys.forEach(k=>{html+=`<div class="result-item"><span>${names[k]||k}</span><span style="color:var(--muted)">${votes[k].wish}</span></div>`;});
-  document.getElementById('dinner-result-content').innerHTML=html;
-  // restore submitted states
+  const names2={mila:'🌸 Mila',romy:'🌿 Romy',mom:'👩 Mom',dad:'👨 Dad'};
+  let h='';
+  keys.forEach(k=>{h+='<div class="result-item"><span>'+(names2[k]||k)+'</span><span style="color:var(--muted)">'+(votes[k].wish||votes[k])+'</span></div>';});
+  document.getElementById('dinner-result-content').innerHTML=h;
   keys.forEach(k=>{
     const inp=document.getElementById('di-'+k);
     const dd=document.getElementById('dd-'+k);
-    if(inp){inp.value=votes[k].wish;inp.disabled=true;}
+    if(inp&&votes[k]){inp.value=votes[k].wish||votes[k];inp.disabled=true;}
     if(dd)dd.style.display='block';
-    if(dinnerTypes[k]!==votes[k].type){
-      dinnerTypes[k]=votes[k].type;
-      const row=document.querySelector(`#vc-${k} .vote-type-row`);
-      // no vc id in this version, skip
-    }
   });
 }
 
@@ -966,7 +1090,7 @@ function renderDashboard(){
   // monthly avgs
   ['mila','romy'].forEach(g=>{
     const ma=getMonthAvg(g);
-    const bonus=hasHouseBonus(g)?50:0;
+    const weeksBonus=hasHouseBonus(g); const bonus=Math.min(weeksBonus,4)*12.5;
     const base=ma>=90?150:Math.round(150*(ma/100));
     const el_avg=document.getElementById('dash-'+g+'-avg');
     const el_bar=document.getElementById('dash-'+g+'-bar');
@@ -977,7 +1101,7 @@ function renderDashboard(){
     if(el_bar) el_bar.style.width=ma+'%';
     if(el_status) el_status.textContent=ma>=90?'On track for full allowance!':'Need '+( 90-ma)+'% more to reach goal';
     if(el_money) el_money.textContent='₪'+(base+bonus);
-    if(el_bonus) el_bonus.textContent=bonus?'Includes +₪50 house bonus!':base>=150?'Full allowance!':'House bonus available';
+    if(el_bonus) el_bonus.textContent=weeksBonus>0?'House bonus: +₪'+Math.round(bonus)+' ('+weeksBonus+'/4 weeks)':base>=150?'Full allowance!':'Do 1 house task/week for bonus';
 
     // streak
     let streak=0;
@@ -992,11 +1116,134 @@ function renderDashboard(){
   });
 }
 
+
+// ---- MONEY TRACKER ----
+function getMoneyKey(){ return today.toISOString().slice(0,7); }
+
+function getPrevMoneyKey(){
+  const d=new Date(today.getFullYear(), today.getMonth()-1, 1);
+  return d.toISOString().slice(0,7);
+}
+
+function getMoneyData(){
+  if(!state.money) state.money={};
+  const mk=getMoneyKey();
+  if(!state.money[mk]) state.money[mk]={mila:[],romy:[]};
+  return state.money[mk];
+}
+
+function getTotalGiven(girl){
+  const mk=getMoneyKey();
+  const txs=(state.money&&state.money[mk]&&state.money[mk][girl])||[];
+  return txs.reduce((s,t)=>s+t.amount,0);
+}
+
+// carry over deficit from previous month
+function getPrevDeficit(girl){
+  const pmk=getPrevMoneyKey();
+  const txs=(state.money&&state.money[pmk]&&state.money[pmk][girl])||[];
+  const given=txs.reduce((s,t)=>s+t.amount,0);
+  // get prev month avg - approximate from stored data
+  // for simplicity store it explicitly
+  const prevEarned=(state.money&&state.money[pmk]&&state.money[pmk][girl+'_earned'])||0;
+  const deficit=given-prevEarned;
+  return deficit>0?deficit:0; // only carry over if they owe
+}
+
+window.addPayment=function(){
+  const girl=document.getElementById('pay-girl').value;
+  const amount=parseFloat(document.getElementById('pay-amount').value)||0;
+  const note=document.getElementById('pay-note').value.trim()||'Payment';
+  if(amount<=0){alert('Please enter an amount!');return;}
+  
+  if(!state.money)state.money={};
+  const mk=getMoneyKey();
+  if(!state.money[mk])state.money[mk]={mila:[],romy:[]};
+  if(!state.money[mk][girl])state.money[mk][girl]=[];
+  
+  state.money[mk][girl].push({
+    amount:amount,
+    note:note,
+    date:today.toLocaleDateString('en-GB',{day:'numeric',month:'short'})
+  });
+  
+  document.getElementById('pay-amount').value='';
+  document.getElementById('pay-note').value='';
+  
+  saveShared();
+  renderMoneyScreen();
+};
+
+function renderMoneyScreen(){
+  // set photos
+  const heroImgs=document.querySelectorAll('#sc-mila img');
+  const mImg=document.getElementById('money-mila-img');
+  const rImg=document.getElementById('money-romy-img');
+  if(heroImgs[0]&&mImg)mImg.src=heroImgs[0].src;
+  const heroImgsR=document.querySelectorAll('#sc-romy img');
+  if(heroImgsR[0]&&rImg)rImg.src=heroImgsR[0].src;
+
+  ['mila','romy'].forEach(girl=>{
+    const ma=getMonthAvg(girl);
+    const weeksBonus=hasHouseBonus(girl);
+    const bonus=Math.min(weeksBonus,4)*12.5;
+    const base=ma>=90?150:Math.round(150*(ma/100));
+    const earned=base+Math.round(bonus);
+    
+    // store earned for prev month deficit calc
+    if(!state.money)state.money={};
+    const mk=getMoneyKey();
+    if(!state.money[mk])state.money[mk]={mila:[],romy:[]};
+    state.money[mk][girl+'_earned']=earned;
+    
+    const given=getTotalGiven(girl);
+    const prevDeficit=getPrevDeficit(girl);
+    const balance=earned-given-prevDeficit;
+    
+    const earnedEl=document.getElementById('money-'+girl+'-earned');
+    const givenEl=document.getElementById('money-'+girl+'-given');
+    const balEl=document.getElementById('money-'+girl+'-balance');
+    
+    if(earnedEl)earnedEl.textContent='₪'+earned;
+    if(givenEl)givenEl.textContent='₪'+given+(prevDeficit>0?' (+₪'+prevDeficit+' from last month)':'');
+    if(balEl){
+      balEl.textContent=(balance>=0?'₪':'−₪')+Math.abs(balance);
+      balEl.className=balance>=0?'balance-pos':'balance-neg';
+    }
+  });
+
+  // transaction list
+  const mk=getMoneyKey();
+  const milaT=(state.money&&state.money[mk]&&state.money[mk]['mila'])||[];
+  const romyT=(state.money&&state.money[mk]&&state.money[mk]['romy'])||[];
+  const all=[
+    ...milaT.map(t=>({...t,girl:'mila'})),
+    ...romyT.map(t=>({...t,girl:'romy'}))
+  ];
+  
+  const txList=document.getElementById('tx-list');
+  if(!txList)return;
+  if(!all.length){
+    txList.innerHTML='<div style="font-size:13px;color:var(--muted);text-align:center;padding:16px">No transactions yet</div>';
+    return;
+  }
+  const names={mila:'🌸 Mila',romy:'🌿 Romy'};
+  txList.innerHTML=all.map(t=>
+    '<div class="tx-row">'+
+    '<span style="font-size:16px">'+(t.girl==='mila'?'🌸':'🌿')+'</span>'+
+    '<div style="flex:1"><div style="font-size:13px">'+t.note+'</div>'+
+    '<div style="font-size:11px;color:var(--muted)">'+t.date+'</div></div>'+
+    '<span class="tx-amount-neg">−₪'+t.amount+'</span>'+
+    '</div>'
+  ).join('');
+}
+
 // override showTab to render dashboard when opened
 const _origShowTab = window.showTab;
 window.showTab = function(name, el, code){
   _origShowTab(name, el, code);
   if(name==='dash') setTimeout(renderDashboard, 100);
+  if(name==='money') setTimeout(renderMoneyScreen, 100);
 };
 </script>
 </body>
