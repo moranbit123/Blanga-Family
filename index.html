@@ -1267,15 +1267,6 @@ function renderMoneyScreen(){
     '</div>';
   }).join('');
 }
-  txList.innerHTML=all.map(t=>
-    '<div class="tx-row">'+
-    '<span style="font-size:16px">'+(t.girl==='mila'?'🌸':'🌿')+'</span>'+
-    '<div style="flex:1"><div style="font-size:13px">'+t.note+'</div>'+
-    '<div style="font-size:11px;color:var(--muted)">'+t.date+'</div></div>'+
-    '<span class="tx-amount-neg">−₪'+t.amount+'</span>'+
-    '</div>'
-  ).join('');
-}
 
 // ---- RETRO UPDATE ----
 window.saveRetro = async function(){
