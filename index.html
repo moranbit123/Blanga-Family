@@ -155,6 +155,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .loading-text{font-size:13px;color:var(--muted)}
 
 .parent-note{font-size:11px;color:var(--muted);font-style:italic;padding:4px 2px 8px}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:white;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:500;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none}
+.toast.show{opacity:1}
 .tab.act-mo{color:#639922;border-bottom-color:#639922}
 .money-input{width:100%;padding:9px 11px;border:1px solid var(--border);border-radius:10px;background:var(--bg);font-size:15px;color:var(--text);font-family:inherit;outline:none;text-align:center}
 .money-input:focus{border-color:var(--gr)}
@@ -175,6 +177,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 </style>
 </head>
 <body>
+<div class="toast" id="toast">✓ Saved!</div>
 <div class="app">
 
 <div class="header">
@@ -260,7 +263,29 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="stat"><div class="stat-v" style="color:var(--pu)" id="p-mila-today">0%</div><div class="stat-l">Mila today</div></div>
     <div class="stat"><div class="stat-v" style="color:var(--te)" id="p-romy-today">0%</div><div class="stat-l">Romy today</div></div>
   </div>
-  <div class="sec-label">Parent Tasks — This Week</div>
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px;margin-bottom:12px">
+  <div style="font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">📅 Update a previous day</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+    <div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:4px">Date</div>
+      <input type="date" id="retro-date" style="width:100%;padding:9px;border:1px solid var(--border);border-radius:10px;background:var(--bg);font-size:13px;color:var(--text);outline:none">
+    </div>
+    <div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:4px">Girl</div>
+      <select id="retro-girl" style="width:100%;padding:9px;border:1px solid var(--border);border-radius:10px;background:var(--bg);font-size:14px;color:var(--text);outline:none">
+        <option value="mila">🌸 Mila</option>
+        <option value="romy">🌿 Romy</option>
+      </select>
+    </div>
+  </div>
+  <div style="font-size:12px;color:var(--muted);margin-bottom:6px">Completion %</div>
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+    <input type="range" id="retro-pct" min="0" max="100" value="100" style="flex:1" oninput="document.getElementById('retro-pct-val').textContent=this.value+'%'">
+    <span id="retro-pct-val" style="font-size:15px;font-weight:700;color:var(--pu);width:40px">100%</span>
+  </div>
+  <button class="btn btn-primary" onclick="saveRetro()" style="font-size:13px;padding:10px">Save retroactive update</button>
+</div>
+<div class="sec-label">Parent Tasks — This Week</div>
   <div class="task" onclick="toggleParent('walk_mila',this)">
     <div class="task-icon">🎧</div>
     <div class="tinfo"><div class="tname">Walk with Mila</div><div class="tmeta">outside with music · once a week</div></div>
@@ -441,6 +466,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div style="margin-bottom:10px">
       <div style="font-size:12px;color:var(--muted);margin-bottom:4px">Note (optional)</div>
       <input type="text" id="pay-note" style="width:100%;padding:9px 11px;border:1px solid var(--border);border-radius:10px;background:var(--bg);font-size:13px;color:var(--text);outline:none" placeholder="e.g. mall, snack, allowance advance...">
+    </div>
+    <div style="margin-bottom:10px">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:4px">Date</div>
+      <input type="date" id="pay-date" style="width:100%;padding:9px 11px;border:1px solid var(--border);border-radius:10px;background:var(--bg);font-size:13px;color:var(--text);outline:none">
     </div>
     <button class="btn btn-primary" onclick="addPayment()">Add payment ₪</button>
   </div>
@@ -656,7 +685,8 @@ async function saveToday(){
     },{merge:true});
     monthData[todayKey]=state;
     setSynced();
-  }catch(e){ document.getElementById('sync-dot').className='sync-dot'; }
+    showToast('✓ Saved!');
+  }catch(e){ document.getElementById('sync-dot').className='sync-dot'; showToast('❌ Not saved — check connection'); }
 }
 
 async function saveShared(){
@@ -995,6 +1025,15 @@ window.showTab=function(name,el,code){
 // ---- INIT ----
 loadToday();
 
+// ---- TOAST ----
+function showToast(msg){
+  const t=document.getElementById('toast');
+  if(!t)return;
+  t.textContent=msg||'✓ Saved!';
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2000);
+}
+
 // ---- NOTIFICATIONS ----
 async function requestNotificationPermission(){
   if(!('Notification' in window)) return;
@@ -1126,35 +1165,27 @@ function renderDashboard(){
 // ---- MONEY TRACKER ----
 function getMoneyKey(){ return today.toISOString().slice(0,7); }
 
-function getPrevMoneyKey(){
-  const d=new Date(today.getFullYear(), today.getMonth()-1, 1);
-  return d.toISOString().slice(0,7);
+function getAllTransactions(girl){
+  if(!state.money) return [];
+  const allTx=[];
+  Object.keys(state.money).sort().forEach(mk=>{
+    const txs=(state.money[mk]&&state.money[mk][girl])||[];
+    txs.forEach(t=>allTx.push(Object.assign({},t,{monthKey:mk})));
+  });
+  return allTx;
 }
 
-function getMoneyData(){
-  if(!state.money) state.money={};
-  const mk=getMoneyKey();
-  if(!state.money[mk]) state.money[mk]={mila:[],romy:[]};
-  return state.money[mk];
+function getTotalGivenAllTime(girl){
+  return getAllTransactions(girl).reduce(function(s,t){return s+t.amount;},0);
 }
 
-function getTotalGiven(girl){
-  const mk=getMoneyKey();
-  const txs=(state.money&&state.money[mk]&&state.money[mk][girl])||[];
-  return txs.reduce((s,t)=>s+t.amount,0);
+function getTotalEarnedAllTime(girl){
+  if(!state.money) return 0;
+  return Object.keys(state.money).reduce(function(s,mk){
+    return s+((state.money[mk]&&state.money[mk][girl+'_earned'])||0);
+  },0);
 }
 
-// carry over deficit from previous month
-function getPrevDeficit(girl){
-  const pmk=getPrevMoneyKey();
-  const txs=(state.money&&state.money[pmk]&&state.money[pmk][girl])||[];
-  const given=txs.reduce((s,t)=>s+t.amount,0);
-  // get prev month avg - approximate from stored data
-  // for simplicity store it explicitly
-  const prevEarned=(state.money&&state.money[pmk]&&state.money[pmk][girl+'_earned'])||0;
-  const deficit=given-prevEarned;
-  return deficit>0?deficit:0; // only carry over if they owe
-}
 
 window.addPayment=function(){
   const girl=document.getElementById('pay-girl').value;
@@ -1167,14 +1198,17 @@ window.addPayment=function(){
   if(!state.money[mk])state.money[mk]={mila:[],romy:[]};
   if(!state.money[mk][girl])state.money[mk][girl]=[];
   
+  const payDateVal=document.getElementById('pay-date').value;
+  const payDate=payDateVal?new Date(payDateVal).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}):today.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
   state.money[mk][girl].push({
     amount:amount,
     note:note,
-    date:today.toLocaleDateString('en-GB',{day:'numeric',month:'short'})
+    date:payDate
   });
   
   document.getElementById('pay-amount').value='';
   document.getElementById('pay-note').value='';
+  document.getElementById('pay-date').value='';
   
   saveShared();
   renderMoneyScreen();
@@ -1191,38 +1225,32 @@ function renderMoneyScreen(){
     const weeksBonus=hasHouseBonus(girl);
     const bonus=Math.min(weeksBonus,4)*12.5;
     const base=ma>=90?150:Math.round(150*(ma/100));
-    const earned=base+Math.round(bonus);
+    const thisMonthEarned=base+Math.round(bonus);
     
-    // store earned for prev month deficit calc
     if(!state.money)state.money={};
     const mk=getMoneyKey();
     if(!state.money[mk])state.money[mk]={mila:[],romy:[]};
-    state.money[mk][girl+'_earned']=earned;
+    state.money[mk][girl+'_earned']=thisMonthEarned;
     
-    const given=getTotalGiven(girl);
-    const prevDeficit=getPrevDeficit(girl);
-    const balance=earned-given-prevDeficit;
+    const totalEarned=getTotalEarnedAllTime(girl);
+    const totalGiven=getTotalGivenAllTime(girl);
+    const balance=totalEarned-totalGiven;
     
     const earnedEl=document.getElementById('money-'+girl+'-earned');
     const givenEl=document.getElementById('money-'+girl+'-given');
     const balEl=document.getElementById('money-'+girl+'-balance');
     
-    if(earnedEl)earnedEl.textContent='₪'+earned;
-    if(givenEl)givenEl.textContent='₪'+given+(prevDeficit>0?' (+₪'+prevDeficit+' from last month)':'');
+    if(earnedEl)earnedEl.textContent='₪'+totalEarned+' (this month: ₪'+thisMonthEarned+')';
+    if(givenEl)givenEl.textContent='₪'+totalGiven;
     if(balEl){
       balEl.textContent=(balance>=0?'₪':'−₪')+Math.abs(balance);
       balEl.className=balance>=0?'balance-pos':'balance-neg';
     }
   });
-
-  // transaction list
-  const mk=getMoneyKey();
-  const milaT=(state.money&&state.money[mk]&&state.money[mk]['mila'])||[];
-  const romyT=(state.money&&state.money[mk]&&state.money[mk]['romy'])||[];
-  const all=[
-    ...milaT.map(t=>({...t,girl:'mila'})),
-    ...romyT.map(t=>({...t,girl:'romy'}))
-  ];
+  // ALL transactions newest first
+  const milaAll=getAllTransactions('mila').map(function(t){return Object.assign({},t,{girl:'mila'});});
+  const romyAll=getAllTransactions('romy').map(function(t){return Object.assign({},t,{girl:'romy'});});
+  const all=milaAll.concat(romyAll).sort(function(a,b){return a.date<b.date?1:-1;});
   
   const txList=document.getElementById('tx-list');
   if(!txList)return;
@@ -1230,7 +1258,15 @@ function renderMoneyScreen(){
     txList.innerHTML='<div style="font-size:13px;color:var(--muted);text-align:center;padding:16px">No transactions yet</div>';
     return;
   }
-  const names={mila:'🌸 Mila',romy:'🌿 Romy'};
+  txList.innerHTML=all.map(function(t){
+    return '<div class="tx-row">'+
+    '<span style="font-size:16px">'+(t.girl==='mila'?'🌸':'🌿')+'</span>'+
+    '<div style="flex:1"><div style="font-size:13px">'+t.note+'</div>'+
+    '<div style="font-size:11px;color:var(--muted)">'+t.date+(t.monthKey?' · '+t.monthKey:'')+'</div></div>'+
+    '<span class="tx-amount-neg">−₪'+t.amount+'</span>'+
+    '</div>';
+  }).join('');
+}
   txList.innerHTML=all.map(t=>
     '<div class="tx-row">'+
     '<span style="font-size:16px">'+(t.girl==='mila'?'🌸':'🌿')+'</span>'+
@@ -1240,6 +1276,44 @@ function renderMoneyScreen(){
     '</div>'
   ).join('');
 }
+
+// ---- RETRO UPDATE ----
+window.saveRetro = async function(){
+  const dateVal = document.getElementById('retro-date').value;
+  const girl = document.getElementById('retro-girl').value;
+  const pct = parseInt(document.getElementById('retro-pct').value);
+  
+  if(!dateVal){alert('Please pick a date!');return;}
+  
+  const retroKey = dateVal;
+  
+  // Build a fake state where all must tasks are done proportionally
+  if(!state[girl]) state[girl]={};
+  
+  // Load or create that day's data
+  if(!monthData[retroKey]) monthData[retroKey]={mila:{},romy:{}};
+  
+  const tasks = getMustIds(girl);
+  const numDone = Math.round(tasks.length * pct / 100);
+  const dayState = {};
+  tasks.forEach((id,i) => { dayState[id] = i < numDone; });
+  
+  monthData[retroKey][girl] = dayState;
+  
+  // Save to Firebase
+  setSyncing();
+  try{
+    const {setDoc, doc} = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    await setDoc(doc(db, 'days', retroKey), {[girl]: dayState}, {merge:true});
+    setSynced();
+    showToast('✓ Retroactive update saved!');
+    renderGirl(girl);
+    updateParentUI();
+  }catch(e){
+    showToast('❌ Error saving — try again');
+    console.error(e);
+  }
+};
 
 // override showTab to render dashboard when opened
 const _origShowTab = window.showTab;
